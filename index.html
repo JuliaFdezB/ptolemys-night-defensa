@@ -302,7 +302,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 0 · PORTADA -->
 <section class="slide cover2 cover" data-section="Apertura"
-  data-notes="<h4>0 · Apertura (≈1 min)</h4><p>Buenos días. Soy Julia Fernández Bermejo, TFG supervisado por <b>Pedro José Sanz Valero</b>.</p><p>Este trabajo es un <b>estudio del impacto de la IA en el diseño y desarrollo de videojuegos</b>, hecho desde dentro de un proyecto real: Ptolemy's Night.</p>">
+  data-notes="<h4>1 · Portada</h4><ul><li>Quién soy + título: <b>El impacto de la IA en el diseño y desarrollo de videojuegos. Un caso de estudio a través de Ptolemy's Night</b>.</li><li>Supervisor: Pedro José Sanz Valero.</li></ul>">
   <div class="cover-left">
     <h1>El impacto de la <span class="gold">IA</span> en el diseño y desarrollo de videojuegos</h1>
     <p class="muted" style="margin-top:.5rem;font-size:clamp(1.8rem,3.4vw,2.8rem);line-height:1.2">Un caso de estudio a través de <span class="gold">Ptolemy's Night</span></p>
@@ -315,7 +315,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 1 · MOTIVACIÓN -->
 <section class="slide" data-section="Motivación"
-  data-notes="<h4>1 · Motivación, objetivos y estructura (≈1.5 min)</h4><p>Dos motivaciones/objetivos confluyen en <b>este estudio</b>: (1) aplicar lo aprendido en la carrera desarrollando un juego completo, y (2) responder de primera mano hasta qué punto la IA me ayuda a desarrollar videojuegos.</p><p>De ahí nace la estructura: el mismo trabajo se mira desde <b>cuatro escenarios</b> de contratación, según el rol de la IA — del desarrollador con la IA como herramienta (Esc.1) al emprendedor con diseñador y un equipo pequeño (Esc.4).</p>">
+  data-notes="<h4>2 · Motivación, objetivos y estructura</h4><ul><li>Objetivo de todo TFG: demostrar/aplicar lo aprendido en la carrera.</li><li>Detonante: en 3º, un dev de Tequila Works contó cómo su estudio (10+ años) cerró casi de un día para otro por la IA → me despertó la curiosidad.</li><li>La pregunta: quiero ser desarrolladora indie; la IA hace viable un juego indie con mucho menos presupuesto. Responderla de primera mano.</li><li>Diseñé un estudio que responde la pregunta y me obliga a desarrollar un juego como referencia → cumplo los dos objetivos.</li><li>Marco: emprendedora que quiere saber a cuánta gente contratar contando con la IA. 4 escenarios: Esc.1 yo + IA (referencia); Esc.2 yo sola; Esc.3 yo + diseñador; Esc.4 equipo pequeño + IA en tareas concretas.</li></ul>">
   <h2 style="text-align:center">Motivación, objetivos y estructura</h2>
   <div class="dstage">
     <svg viewBox="0 0 1000 500" aria-hidden="true">
@@ -355,14 +355,14 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 2 · GANTT -->
 <section class="slide center" data-section="Planificación"
-  data-notes="<h4>2 · Gantt (≈45 s)</h4><p>Seis líneas EN PARALELO: planificación, análisis, desarrollo del juego (Esc.1), escenarios IA (2-4), resultados/conclusiones, documentación.</p><p>Clave: el juego TENÍA que estar terminado antes de evaluar los demás escenarios.</p>">
+  data-notes="<h4>3 · Planificación (Gantt)</h4><ul><li>Proyecto largo → planificación clave; Gantt recomendado en la plantilla del TFG.</li><li>Agrupado parecido a las secciones de la memoria → más fácil de entender.</li><li>Hasta no terminar (casi) el Esc.1 no podía empezar 2/3/4; estos llevan mucho menos tiempo.</li><li>Documentación a lo largo de todo; tras el playtesting, un último remate del Esc.1.</li></ul>">
   <h2>Planificación</h2>
   <div class="frame" style="max-width:min(1100px,88vw)"><img src="assets/gantt.png" alt="Diagrama de Gantt" style="max-height:68vh;object-fit:contain"></div>
 </section>
 
 <!-- 5 · PTOLEMY'S NIGHT — EL JUEGO (Escenario 1, captura canónica) -->
 <section class="slide split wide" data-section="Escenario 1 · El juego"
-  data-notes="<h4>5 · Ptolemy's Night — el juego (Escenario 1)</h4><p>Puzle de 1 jugador. Eres el ESPÍRITU DE CASIOPEA y configuras la habitación de Claudio Ptolomeo (s.II) para que él, de noche, descubra y catalogue tu constelación.</p><p>3 fases (GameManager): Placement / Simulation / End. Esta es la build canónica = referencia de calidad del estudio (3 meses, humano + IA de apoyo).</p>">
+  data-notes="<h4>4 · Ptolemy's Night — el juego</h4><ul><li>Eres el espíritu de Casiopea; mueves los objetos de la habitación de Ptolomeo.</li><li>Objetivo: que, aunque tenga sueño y quiera irse a la cama, se dé cuenta de que olvidó apuntar tu constelación en el Almagesto.</li><li>3 fases: Placement (colocar), Simulation (solo observas cómo reacciona), End (pistas si fallaste / cuántos de los 3 caminos has desbloqueado).</li></ul>">
   <div class="txt">
     <div class="kicker">Escenario 1 · la referencia canónica</div>
     <h2>Ptolemy's Night</h2>
@@ -376,7 +376,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 5b2 · ARQUITECTURA (BUS) -->
 <section class="slide center" data-section="Escenario 1 · El juego"
-  data-notes="<h4>5b2 · Por dentro</h4><p>Los subsistemas no se hablan directamente: todo viaja por un único bus estático, <b>GameEvents</b>. El <b>GameManager</b> marca las fases y las anuncia; el árbol de decisión, los interactables y la UI se suscriben localmente.</p><p>Esto es lo que mantiene el código <b>desacoplado</b>: cada parte evoluciona sin romper las demás.</p>">
+  data-notes="<h4>5 · Por dentro</h4><ul><li>Estructura sencilla basada en un event bus.</li><li>Cada script va a su bola; el bus permite que las partes se comuniquen (se mandan paquetes) y que el juego funcione.</li></ul>">
   <h2>Por dentro</h2>
   <div class="arch">
     <div class="acard top"><b>GameManager</b><small>marca las fases del juego</small></div>
@@ -397,7 +397,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 5c · ALL-ROUNDER -->
 <section class="slide top" data-section="Escenario 1 · El juego"
-  data-notes="<h4>5c · All-rounder</h4><ul><li>Narrativa/research: Almagesto, mito de Casiopea, 18 diálogos, intro de 10 fragmentos, carta 'C.' que es la pista.</li><li>Arte: paleta fija como restricción dura; mechanics-first; personaje sombrero Blender + cuerpo Meshy + Mixamo; iluminación cohesiona.</li><li>Playtesting: 24 testers → build final (parar/acelerar, saltar narrativa, pistas, sonido).</li></ul>">
+  data-notes="<h4>6 · Un resultado 'all-rounder'</h4><ul><li>Narrativa: uní el mito de Casiopea con el Almagesto de Ptolomeo → narrativa real y completa.</li><li>Arte: empecé por la paleta y jugué con el logo para fijar su significado. Morado = noche/misterio/fantasía; amarillo = contraste (estrellas, luz de velas). Sensación tranquila, acorde a un puzzle.</li><li>Playtesting: aunque pequeño, para un juego jugable y disfrutable, pieza completa (lista para Steam si quisiera).</li></ul>">
   <div class="kicker">Un resultado "all-rounder"</div>
   <div class="three allr-text">
     <div class="card"><h3>Narrativa &amp; research</h3><p style="font-size:1.15em">Almagesto, mito de Casiopea, 18 diálogos, carta-pista</p></div>
@@ -420,7 +420,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 6a · ESCENARIO 2 (captura magenta) -->
 <section class="slide split flip" data-section="Escenario 2"
-  data-notes="<h4>6a · Escenario 2 (la IA sola)</h4><p>Brief pobre, sin revisión. &lt;1h. Pasó TODAS sus pruebas… pero injugable: magenta, objetos enterrados, eventos sin señal, cámara fija. Se colaron porque nunca se le pidió comprobarlos.</p>">
+  data-notes="<h4>7 · Escenario 2</h4><ul><li>La IA recibió muy poco input (solo el emprendedor, sin saber de videojuegos): le di la ficha técnica del TFG, sin feedback.</li><li>Resultado: no jugable — materiales mal, objetos que se hunden medio en el suelo, cámara, etc.</li></ul>">
   <div class="txt">
     <div class="kicker">Escenario 2 · la IA sola, brief escaso</div>
     <h2>Pasó sus pruebas… pero es injugable</h2>
@@ -431,7 +431,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 6b · ESCENARIO 3 (captura habitación oscura) -->
 <section class="slide split" data-section="Escenario 3"
-  data-notes="<h4>6b · Escenario 3 (GDD + checkpoints)</h4><p>GDD completo + checkpoints. &lt;1h. Sin fallos estructurales, pero el juego no se 'juega'; 5 problemas estéticos. Buen punto de partida, no entregable. Falta technical artist + playtester.</p>">
+  data-notes="<h4>8 · Escenario 3</h4><ul><li>El emprendedor contrata a un diseñador que hace un GDD elaborado y de calidad → eso recibe la IA.</li><li>Resultado mucho mejor: no es juego completo, pero game loop completo, UI (poco bonita) completa, narrativa implementada, cámara gira.</li><li>Hincapié: solo con un buen GDD lo hizo en ~1 hora; yo tardaría ~una semana → diferencia abismal.</li></ul>">
   <div class="txt">
     <div class="kicker">Escenario 3 · GDD completo + checkpoints</div>
     <h2>Interactivo, pero aún no es un juego</h2>
@@ -442,7 +442,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 6c · ESCENARIO 4 (captura pulida) -->
 <section class="slide" data-section="Escenario 4"
-  data-notes="<h4>6c · Escenario 4 · tres tareas a la IA</h4><p>Al contrario que los anteriores, la IA recibió el <b>juego completo</b> (el del Escenario 1). Le pedí tres tareas, cada una más ambigua y ambiciosa:</p><ul><li><b>Tarea 1 (concreta y acotada):</b> añadir un botón para pausar la simulación. Lo hizo a la primera, sola, reciclando assets y fuentes; quizá el posicionamiento no era el ideal.</li><li><b>Tarea 2 (más margen de decisión):</b> implementar un sistema de pistas. Tuvo que plantear el problema y la solución → feedback al final de cada simulación según el camino erróneo, y más explícito si repites el mismo error.</li><li><b>Tarea 3 (experimental, libre):</b> 5 horas para mejorar el juego asumiendo el rol de diseñadora. Muchas de sus mejoras coincidieron con el feedback real del playtesting (p. ej. botón de pausa y de acelerar).</li></ul>">
+  data-notes="<h4>9 · Escenario 4 · tres tareas</h4><ul><li>Se le dio el juego completo (el mío, antes del playtesting). 3 tareas, cada una más ambiciosa.</li><li>T1 botón de pausa: perfecto, reusó assets; solo reposicionar; &lt;5 min.</li><li>T2 sistema de pistas: más ambigua (rol de diseñador). Buena idea: frase-pista según el camino erróneo; más fuerte si repites; a la 3ª, te pone el libro. (A mí no me convence, pero es utilizable; solo reposicionar texto.) Tiende a colocar mal el texto de la UI.</li><li>T3 5 h libres (rol de diseñadora): muchas mejoras coincidieron con el feedback del playtesting (pausa, textos, música…).</li></ul>">
   <div class="kicker">Escenario 4 · partió del juego ya terminado</div>
   <h2>Tres tareas, cada una más ambiciosa</h2>
   <div class="three taskrow">
@@ -463,7 +463,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 7 · RESULTADOS (TABLA) -->
 <section class="slide" data-section="Resultados y conclusiones"
-  data-notes="<h4>7 · Resultados y conclusiones</h4><p>Recorrer la tabla. Dos conclusiones: (1) la IA es más útil con más info previa, objetivo y restricciones claras (S2 vs S3); (2) el humano sigue imprescindible (criterio, gusto, arte, aceptación del jugador); el equipo mínimo es más pequeño pero no cero.</p>">
+  data-notes="<h4>10 · Resultados y conclusiones</h4><ul><li>Los cuatro resultados, uno al lado de otro.</li><li>Esc.2 descartable: tú solo con la IA no sirve (salvo que ya sepas de videojuegos).</li><li>Conclusión (Esc.3): la calidad y el detalle del input que le das a la IA es crucial para su desempeño (solo cambiando el input, el salto es enorme).</li><li>Aún no se puede quitar al humano: hace falta un diseñador de videojuegos y al menos un artista técnico.</li></ul>">
   <h2>Resultados y conclusiones</h2>
   <table class="resultsT">
     <thead><tr><th></th><th>Esc. 1</th><th>Esc. 2</th><th>Esc. 3</th><th>Esc. 4</th></tr></thead>
@@ -482,7 +482,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 8 · EQUIPO + COSTE -->
 <section class="slide" data-section="Resultados"
-  data-notes="<h4>8 · Equipo y coste/tiempo</h4><p>Estudio pequeño, pero mucho más pequeño. IA absorbe junior+medio; trabaja al lado de technical artist, playtester y senior. 8→5 personas, coste personal a la mitad, tiempo 15→7 meses. Cifras ilustrativas.</p>">
+  data-notes="<h4>11 · Equipo mínimo</h4><ul><li>Equipo mínimo: emprendedor + diseñador de videojuegos + un equipo pequeño con un poco de todo.</li><li>Los programadores junior y medios se pueden descartar: la IA cubre sus tareas.</li></ul>">
   <h2>Estructura mínima de equipo</h2>
   <div class="cols">
     <div>
@@ -511,7 +511,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 10 · DEMO -->
 <section class="slide center" data-section="Demostración"
-  data-notes="<h4>10 · DEMO (5 min, fuera de los 10)</h4><p>~2 min jugar en vivo (3 fases, intentar buen final; navegador ya abierto). ~3 min vídeos S2/S3/S4. Plan B: build WebGL local o grabación.</p>">
+  data-notes="<h4>12 · Demostración</h4><ul><li>Pasamos a la demo: jugar un poco a Ptolemy's Night (y vídeos de los escenarios).</li></ul>">
   <div class="eyebrow">Demostración</div>
   <h2>Ptolemy's Night — en vivo</h2>
   <a href="https://julia-fdez.itch.io/ptolemys-night" target="_blank" rel="noopener" style="text-decoration:none">
@@ -525,7 +525,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 
 <!-- 11 · GRACIAS -->
 <section class="slide center" data-section="Gracias"
-  data-notes="<h4>11 · Cierre</h4><p>Gracias. Vídeos de los escenarios + preguntas del tribunal.</p>">
+  data-notes="<h4>13 · Gracias</h4><ul><li>Cierre y preguntas del tribunal.</li></ul>">
   <img class="logo" src="assets/title.png" alt="" style="width:min(300px,36vw)">
   <h1 class="gold">Gracias</h1>
   <p class="muted" style="margin-top:.6em">Julia Fernández Bermejo · TFG · Universitat Jaume I</p>
