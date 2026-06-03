@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ptolemy's Night — Defensa TFG · Julia Fernández Bermejo</title>
+<style>
+:root{
+  --night:#2a1a4a; --night2:#1a1030; --purple:#4D2B8C; --purple2:#85409D;
+  --gold:#EEA727; --pale:#FFEF5F; --ink:#F4ECFF; --muted:#C9B8E8;
+  --good:#6FCF97; --bad:#E57373;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;overflow:hidden;background:#000;
+  font-family:"Segoe UI",system-ui,-apple-system,sans-serif;color:var(--ink)}
+#deck{position:fixed;inset:0}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+  padding:6vh 7vw;background:radial-gradient(120% 120% at 80% 0%, var(--purple) 0%, var(--night) 45%, var(--night2) 100%);
+  animation:fade .45s ease}
+.slide.active{display:flex}
+.slide.center{align-items:center;text-align:center}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.slide::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%,#fff8 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 70% 20%,#fff6 50%,transparent 51%),
+    radial-gradient(1px 1px at 40% 70%,var(--pale) 50%,transparent 51%),
+    radial-gradient(1.5px 1.5px at 85% 60%,#fff7 50%,transparent 51%),
+    radial-gradient(1px 1px at 55% 45%,var(--gold) 50%,transparent 51%),
+    radial-gradient(1px 1px at 12% 80%,#fff5 50%,transparent 51%)}
+.slide>*{position:relative;z-index:1}
+
+/* Sistema tipográfico simplificado: 1 acento (dorado), títulos en color sólido, pocos tamaños */
+h1{font-size:clamp(2.4rem,4.8vw,3.9rem);line-height:1.12;font-weight:800;color:var(--ink)}
+h2{font-size:clamp(1.9rem,3.4vw,2.7rem);font-weight:700;margin-bottom:.5em;color:var(--gold)}
+h3{font-size:clamp(1.25rem,1.9vw,1.6rem);color:var(--gold);font-weight:700;margin:.2em 0 .3em}
+p,li{font-size:clamp(1.25rem,1.8vw,1.6rem);line-height:1.5;color:var(--ink)}
+.muted{color:var(--muted)}
+.gold,.pale{color:var(--gold)}          /* un único color de acento */
+.bad{color:var(--bad)}                    /* rojo solo para lo negativo (funcional) */
+.small{font-size:.85em}
+.big{font-size:1.15em}
+ul{list-style:none}
+ul li{padding-left:1.4em;position:relative;margin:.5em 0}
+ul li::before{content:"✦";position:absolute;left:0;color:var(--gold);font-size:.8em;top:.25em}
+.kicker{text-transform:uppercase;letter-spacing:.22em;font-size:1rem;color:var(--gold);font-weight:700;margin-bottom:.5em}
+.eyebrow{display:inline-block;background:#ffffff14;border:1px solid #ffffff22;border-radius:999px;
+  padding:.3em .9em;font-size:1.05rem;color:var(--pale);margin-bottom:1em}
+
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:3vw;align-items:center}
+.cols.c13{grid-template-columns:1.2fr 1fr}.cols.c31{grid-template-columns:1fr 1.4fr}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4vw}
+.card{background:#ffffff0d;border:1px solid #ffffff1f;border-radius:16px;padding:1.1em 1.2em}
+.card h3{margin-top:0}
+.mcard{display:flex;flex-direction:column;gap:.7em}
+.mcard .frame{padding:6px}
+.mcard .frame img{height:26vh;width:100%;object-fit:contain;background:#0007;border-radius:8px}
+.mcard.mid{align-items:center;justify-content:center;text-align:center}
+.stack{display:flex;flex-direction:column;gap:1rem;align-items:center}
+.stack .frame{padding:8px;width:auto}
+.stack .frame img{max-height:30vh;max-width:100%;width:auto;display:block;object-fit:contain}
+.stack .frame:nth-child(1) img{max-height:24vh}   /* TequilaWorks (horizontal) */
+.stack .frame:nth-child(2) img{max-height:46vh}   /* Ptolomeo (vertical), más grande */
+.frame{background:#0006;border:1px solid var(--gold);border-radius:14px;padding:8px;box-shadow:0 12px 40px #0008}
+.frame img{width:100%;display:block;border-radius:8px}
+img.contain{object-fit:contain;max-height:60vh}
+.center-img{display:flex;justify-content:center}
+
+/* ===== Composiciones dinámicas (asimetría, solape, sangre) ===== */
+/* Portada editorial: título a la izquierda, logo grande e inclinado a la derecha */
+.cover2{flex-direction:row!important;align-items:center;justify-content:space-between;text-align:left;gap:4vw}
+.cover2 .cover-left{max-width:48%}
+.cover2 h1{margin-bottom:.1em}
+.cover-logo{width:min(52vw,700px);transform:rotate(7deg);filter:drop-shadow(0 14px 34px #000c);flex:0 0 auto}
+
+/* Split a sangre: texto a un lado, imagen llenando el otro borde */
+.split{flex-direction:row!important;align-items:stretch;padding:0!important;gap:0;text-align:left}
+.split .txt{flex:0 0 40%;display:flex;flex-direction:column;justify-content:center;padding:6vh 3vw 6vh 7vw;z-index:2}
+.split.flip .txt{order:2;padding:6vh 7vw 6vh 3vw}
+.split .pic{flex:1;position:relative;overflow:hidden}
+.split.flip .pic{order:1}
+.split .pic img,.split .pic video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.split .pic video{object-fit:contain;background:#0e0a1f}   /* vídeo completo, sin recortar */
+.split .pic::after{pointer-events:none}                    /* que la viñeta no tape los controles */
+.split.wide .txt{flex:0 0 22%}                 /* franja de texto más estrecha → se ve más imagen */
+.split.wide .pic img{object-fit:cover}         /* llena de arriba abajo (toca bordes sup./inf.) */
+.split .pic::after{content:"";position:absolute;inset:0;box-shadow:inset 80px 0 90px -50px var(--night2)}
+.split.flip .pic::after{box-shadow:inset -80px 0 90px -50px var(--night2)}
+.split .cap{margin-top:1rem;display:flex;gap:.7em;flex-wrap:wrap;align-items:center}
+
+/* Collage de imágenes solapadas e inclinadas */
+.collage{position:relative;height:66vh}
+.collage .frame{position:absolute;padding:7px}
+.collage .frame img{width:100%;display:block;border-radius:8px}
+.collage .c1{top:2%;left:-2%;width:80%;transform:rotate(-3.5deg)}
+.collage .c2{bottom:-2%;right:-2%;width:46%;transform:rotate(4deg);z-index:2}
+
+/* Lista con numerales grandes (editorial) */
+.steps{list-style:none}
+.steps li{position:relative;padding-left:2.3em;margin:1em 0}
+.steps li::before{content:none}
+.steps li b{position:absolute;left:0;top:-.15em;font-size:1.8em;font-weight:800;color:var(--gold);opacity:.85;line-height:1}
+
+/* Árbol de objetivos: nodo central → dos flechas → dos objetivos */
+.objtree{width:min(1000px,90vw);margin:0 auto;display:flex;flex-direction:column;align-items:center}
+.obj-apex{display:inline-block;padding:.45em 1.5em;border:2px solid var(--gold);border-radius:16px;
+  background:#ffffff0e;font-size:clamp(1.8rem,3.2vw,2.7rem);font-weight:800;color:var(--gold);box-shadow:0 8px 26px #0007}
+.obj-connect{position:relative;width:100%;height:104px}
+.obj-connect span{position:absolute;background:var(--gold)}
+.obj-connect .stem{left:50%;top:0;width:3px;height:48px;transform:translateX(-50%)}
+.obj-connect .bus{top:48px;left:25%;width:50%;height:3px}
+.obj-connect .drop{top:48px;width:3px;height:48px;transform:translateX(-50%)}
+.obj-connect .drop-l{left:25%}
+.obj-connect .drop-r{left:75%}
+.obj-connect .drop::after{content:"";position:absolute;bottom:-3px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:14px solid var(--gold)}
+.obj-row{display:flex;gap:5%;width:100%;justify-content:center}
+.obj{flex:1;max-width:42%;text-align:center;padding:1.5em 1.3em}
+.obj .n{display:block;font-size:2em;font-weight:800;color:var(--gold);line-height:1;margin-bottom:.25em}
+
+/* Fila de tareas (Escenario 4): una captura por tarea con su título */
+.taskrow{align-items:start;gap:1.6vw;margin-top:1.2rem}
+.taskcard{display:flex;flex-direction:column;gap:.7em}
+.taskt{display:flex;align-items:center;gap:.5em;font-size:clamp(1rem,1.3vw,1.3rem);line-height:1.25;min-height:3.2em}
+.taskt .tasknum{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;
+  width:1.7em;height:1.7em;border-radius:50%;background:var(--gold);color:#1a1030;font-weight:800}
+.taskcard .frame{padding:6px}
+.taskcard .frame{overflow:hidden}
+.taskcard .frame img{width:100%;height:34vh;object-fit:cover;border-radius:8px;display:block}
+.taskcard .frame img.cropx{transform:scale(1.32)}  /* recorta las bandas claras de los lados */
+
+/* Esquema estilo PDF: cajas unidas por finas flechas; especificaciones en vertical */
+.dstage{position:relative;width:min(94vw,1180px);height:calc(min(94vw,1180px)*0.5);margin:.3rem auto 0;
+  font-size:clamp(1rem,1.3vw,1.35rem)}
+.dstage svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.dnode{position:absolute;transform:translate(-50%,-50%);z-index:2}
+.dbox{background:#ffffff0d;border:1px solid #ffffff26;border-radius:12px;padding:.55em .8em}
+.dobj{text-align:center;width:26%}
+.dimg{max-height:205px;max-width:240px;border-radius:12px;box-shadow:0 8px 26px #000a;display:block}
+.dimg.left{transform:translate(-100%,-50%)}   /* pegada por su borde derecho al cuadro */
+.dimg.right{transform:translate(0,-50%)}        /* pegada por su borde izquierdo al cuadro */
+.dstudy{font-weight:800;color:var(--gold);border:2px solid var(--gold);background:#ffffff16;
+  border-radius:12px;padding:.5em 1.4em;font-size:1.3em;letter-spacing:.05em;white-space:nowrap}
+.dnode.dsc{transform:translateX(-50%)}          /* escenarios anclados por arriba (no centrados en vertical) */
+.dsc{text-align:center;display:flex;flex-direction:column;align-items:center;min-width:8.5em}
+.dsc b{color:var(--gold);margin-bottom:.5em;white-space:nowrap}
+.dsc .vspec{display:flex;flex-direction:column;align-items:center;gap:.16em;text-align:center;
+  font-weight:700;line-height:1.12;font-size:1.02em}
+.dsc .vspec .plus{color:var(--gold);font-weight:800;font-size:1.1em}
+.dsc .vspec .note{color:var(--muted);font-weight:600;font-size:.85em}
+/* === Animación por pasos del esquema === */
+/* Fade solo por opacidad, preservando el transform de posición de cada caja */
+.dstage .frag{opacity:0;transition:opacity .5s ease}
+.dstage .frag.show{opacity:1}
+.dstage .dnode.frag,.dstage .dnode.frag.show{transform:translate(-50%,-50%)}
+.dstage .dnode.dsc.frag,.dstage .dnode.dsc.frag.show{transform:translateX(-50%)}
+.dstage .dimg.right.frag,.dstage .dimg.right.frag.show{transform:translate(0,-50%)}
+/* El cuadro de estudio y los escenarios aparecen DESPUÉS de que se dibuje su línea */
+.dstage .dstudy.frag{transition-delay:.75s}
+/* Escenarios: se "dibujan" de arriba a abajo (clip-path) en vez de fundido */
+.dstage .dsc.frag{opacity:1;clip-path:inset(0 0 100% 0 round 12px);transition:clip-path .6s ease;transition-delay:.85s}
+.dstage .dsc.frag.show{clip-path:inset(0 0 0 0 round 12px)}
+/* Líneas/flechas que se "dibujan" (stroke-dashoffset) */
+.dstage path.draw{opacity:0;stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.dstage path.draw.show{opacity:1;animation:drawline .8s ease forwards}
+@keyframes drawline{to{stroke-dashoffset:0}}
+/* === "all-rounder": texto arriba, imágenes llenando el resto === */
+.slide.top{justify-content:flex-start}
+.allr-text{margin-top:.4rem}
+.allr-text .card{padding:.7em 1em}
+.allr-imgs{flex:1;align-items:center;margin-top:1rem}
+.allr-imgs .imgs{display:flex;flex-wrap:wrap;gap:.7em;justify-content:center;align-items:center}
+.allr-imgs img{border-radius:8px;display:block;box-shadow:0 6px 18px #0008}
+.allr-imgs .tall{max-height:44vh;max-width:49%;width:auto;height:auto}
+.allr-imgs .pair{display:flex;gap:.6em;width:100%;justify-content:center;align-items:center}
+.allr-imgs .mini{max-height:10vh;width:auto;height:auto}
+.allr-imgs .shot{max-height:30vh;max-width:100%;width:auto;height:auto}
+.allr-imgs .fig{max-width:100%;width:auto;max-height:44vh;height:auto;background:#fff;padding:5px;border-radius:8px}
+
+/* Arquitectura: espina/bus (GameManager → GameEvents → suscriptores) */
+.arch{display:flex;flex-direction:column;align-items:center;width:min(1020px,90vw);margin:.4rem auto 0;
+  font-size:clamp(1.1rem,1.5vw,1.55rem)}
+.arch .acard{background:#ffffff0d;border:1px solid #ffffff26;border-radius:14px;padding:.7em 1.1em;text-align:center}
+.arch .top b{color:var(--gold)}
+.arch .top small,.arch .arow small{display:block;color:var(--muted);font-weight:600;font-size:.7em;margin-top:.15em}
+.arch .stem{width:3px;height:120px;background:var(--gold)}
+.arch .bus{width:100%;text-align:center;font-weight:800;color:#1a1030;letter-spacing:.05em;
+  background:linear-gradient(90deg,var(--purple2),var(--gold));border-radius:999px;padding:.55em 1em;box-shadow:0 8px 26px #0008}
+.arch .arow{display:flex;gap:6vw;width:96%;justify-content:center;margin-top:120px}
+.arch .arow .acard{position:relative;flex:1 1 0;max-width:28%}
+.arch .arow .acard::before{content:"";position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:3px;height:120px;background:var(--gold)}
+.arch .arow .acard b{color:var(--gold)}
+/* animación: cápsula recorriendo el bus + bolitas de información intercambiándose */
+.arch .bus{position:relative;overflow:visible}
+.arch .capsule{position:absolute;top:50%;width:34px;height:60%;border-radius:999px;pointer-events:none;
+  background:rgba(255,255,255,.25);box-shadow:0 0 12px rgba(255,255,255,.4);mix-blend-mode:screen;
+  transform:translate(-50%,-50%);animation:busride 11s ease-in-out infinite}
+@keyframes busride{0%{left:5%}50%{left:95%}100%{left:5%}}
+.arch .stem{position:relative}
+.arch .ball{position:absolute;left:50%;transform:translate(-50%,-50%);background:rgba(42,26,74,.85);color:#cebde8;
+  font-weight:600;font-size:.56em;padding:.22em .65em;border-radius:999px;white-space:nowrap;
+  border:1px solid #ffffff2b;box-shadow:0 2px 6px #0005;pointer-events:none;opacity:0}
+.arch .stem .ball{animation:stemflow 12s linear infinite}
+@keyframes stemflow{0%{top:0;opacity:0}3%{opacity:1}28%{top:100%;opacity:1}33%{opacity:0}100%{top:100%;opacity:0}}
+.arch .arow .acard .ball{animation:legflow 12s linear infinite}
+@keyframes legflow{0%{top:-120px;opacity:0}3%{opacity:1}28%{top:-10px;opacity:1}33%{opacity:0}100%{top:-10px;opacity:0}}
+.arch .arow .acard .ball.up{animation:legflowup 12s linear infinite}
+@keyframes legflowup{0%{top:-10px;opacity:0}3%{opacity:1}28%{top:-120px;opacity:1}33%{opacity:0}100%{top:-120px;opacity:0}}
+/* 3 ejemplos por camino, turnándose (delays escalonados sobre un ciclo de 12s) */
+.arch .stem .ball:nth-of-type(1){animation-delay:0s}
+.arch .stem .ball:nth-of-type(2){animation-delay:4s}
+.arch .stem .ball:nth-of-type(3){animation-delay:8s}
+.arch .arow .acard:nth-child(1) .ball:nth-of-type(1){animation-delay:1s}
+.arch .arow .acard:nth-child(1) .ball:nth-of-type(2){animation-delay:5s}
+.arch .arow .acard:nth-child(1) .ball:nth-of-type(3){animation-delay:9s}
+.arch .arow .acard:nth-child(2) .ball:nth-of-type(1){animation-delay:3s}
+.arch .arow .acard:nth-child(2) .ball:nth-of-type(2){animation-delay:7s}
+.arch .arow .acard:nth-child(2) .ball:nth-of-type(3){animation-delay:11s}
+.arch .arow .acard:nth-child(3) .ball:nth-of-type(1){animation-delay:2s}
+.arch .arow .acard:nth-child(3) .ball:nth-of-type(2){animation-delay:6s}
+.arch .arow .acard:nth-child(3) .ball:nth-of-type(3){animation-delay:10s}
+@media (prefers-reduced-motion:reduce){.arch .capsule,.arch .ball{animation:none}}
+
+/* slide dominada por imagen */
+.shot{align-items:center;text-align:center}/* el display lo controla .slide.active, no esta clase (si no, se apilan) */
+.shot h2{margin-bottom:.5rem}
+.shot .frame{max-width:min(1000px,82vw)}
+.shot .frame img{max-height:58vh;object-fit:contain}
+.shot .cap{margin-top:.9rem;display:flex;gap:.8em;align-items:center;flex-wrap:wrap;justify-content:center}
+
+.frag{opacity:0;transform:translateY(8px);transition:.4s}
+.frag.show{opacity:1;transform:none}
+
+.badge{display:inline-block;padding:.25em .8em;border-radius:8px;font-weight:700;font-size:.95em}
+.b-good{background:#6FCF9722;color:var(--good);border:1px solid #6FCF9755}
+.b-bad{background:#E5737322;color:var(--bad);border:1px solid #E5737355}
+.b-mid{background:#EEA72722;color:var(--gold);border:1px solid #EEA72755}
+
+table{width:100%;border-collapse:collapse;font-size:clamp(1.05rem,1.55vw,1.45rem)}
+th,td{padding:.6em .8em;text-align:left;border-bottom:1px solid #ffffff1c;vertical-align:middle}
+th{color:var(--gold);font-weight:700}
+thead th:first-child,tbody td:first-child{color:var(--muted);font-weight:600}
+tbody tr:hover{background:#ffffff0a}
+.resultsT{table-layout:fixed}
+.resultsT th:first-child,.resultsT td:first-child{width:23%;font-size:1.25em}
+.resultsT th,.resultsT td{word-wrap:break-word}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:2.4vw}
+
+/* barras */
+.metric{margin:1em 0}
+.metric .cap{font-size:1rem;color:var(--muted);margin-bottom:.4em}
+.bar-row{display:grid;grid-template-columns:minmax(110px,26%) 1fr auto;align-items:center;gap:.9em;margin:.55em 0}
+.bar-track{background:#ffffff14;border-radius:999px;height:22px;overflow:hidden}
+.bar-fill{height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--purple2),var(--gold));transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+.bar-fill.alt{background:linear-gradient(90deg,#E57373,#b85)}
+.bar-val{font-weight:800;color:var(--pale);min-width:3.4em;text-align:right;font-size:1.05em}
+
+/* ===== DIAGRAMA RADIAL DE SOFTWARE ===== */
+.radial{position:relative;width:min(72vh,88vw);height:min(72vh,88vw);margin:0 auto}
+.radial svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.r-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:26%;height:26%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(circle,var(--purple) 0%,#0000 75%);text-align:center}
+.r-center .t{font-weight:800;font-size:clamp(.9rem,1.7vw,1.5rem);color:var(--pale);line-height:1.05}
+.r-center .s{font-size:clamp(.6rem,1vw,.85rem);color:var(--muted);margin-top:.2em}
+.r-node{position:absolute;transform:translate(-50%,-50%);width:12%;height:12%;
+  display:flex;align-items:center;justify-content:center}
+.r-node img{width:64%;height:64%;object-fit:contain}
+.r-node.ring{background:#fff;border:3px solid var(--gold);border-radius:50%;box-shadow:0 6px 18px #0008}
+.r-label{position:absolute;transform:translate(-50%,-50%);width:21%;font-size:clamp(.85rem,1.3vw,1.15rem);line-height:1.2}
+.r-label b{color:var(--gold);display:block;font-size:1.05em}
+.r-label.l{text-align:right}.r-label.r{text-align:left}.r-label.c{text-align:center}
+
+.cover .logo{width:min(280px,32vw);filter:drop-shadow(0 6px 22px #000a);margin-bottom:1rem}
+.cover .logo-chip{width:min(240px,30vw);height:min(240px,30vw);border-radius:50%;
+  background:radial-gradient(circle,#fff 0%,#f3ecff 72%,#ece2ff 100%);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 12px 44px #0009;margin-bottom:1.4rem}
+.cover .logo-chip img{width:78%;height:78%;object-fit:contain}
+.uji-chip{margin-top:1.6rem;background:#fff;border-radius:10px;padding:.5em .9em;box-shadow:0 6px 20px #0007}
+.uji-chip img{height:36px;display:block}
+.struck{text-decoration:line-through;text-decoration-color:var(--bad);opacity:.6}
+.game-wrap{width:min(960px,80vw);aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--gold);box-shadow:0 14px 50px #000a;background:#000}
+.game-wrap iframe{width:100%;height:100%;border:0}
+
+#progress{position:fixed;left:0;bottom:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--pale));z-index:50;transition:width .3s}
+#footer{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:space-between;padding:10px 22px;font-size:.78rem;color:#ffffff77;z-index:40;pointer-events:none}
+#footer .right{display:flex;gap:1.2em;align-items:center}
+#timer{font-variant-numeric:tabular-nums;font-weight:700;color:var(--pale)}#timer.over{color:var(--bad)}
+.section-tag{position:fixed;top:18px;left:22px;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);z-index:40;opacity:.85}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:44vh;overflow:auto;background:#0c0820f2;border-top:2px solid var(--gold);padding:18px 26px;z-index:60;display:none}
+#notes.show{display:block}
+#notes h4{color:var(--gold);text-transform:uppercase;letter-spacing:.15em;font-size:.72rem;margin-bottom:.5em}
+#notes p,#notes li{font-size:clamp(.85rem,1.25vw,1.05rem);color:var(--ink)}
+#help{position:fixed;top:14px;right:18px;z-index:40;font-size:.72rem;color:#ffffff66}
+kbd{background:#ffffff18;border:1px solid #ffffff33;border-bottom-width:2px;border-radius:5px;padding:.05em .4em;font-size:.9em}
+code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- 0 · PORTADA -->
+<section class="slide cover2 cover" data-section="Apertura"
+  data-notes="<h4>0 · Apertura (≈1 min)</h4><p>Buenos días. Soy Julia Fernández Bermejo, TFG supervisado por <b>Pedro José Sanz Valero</b>.</p><p>Este trabajo es un <b>estudio del impacto de la IA en el diseño y desarrollo de videojuegos</b>, hecho desde dentro de un proyecto real: Ptolemy's Night.</p>">
+  <div class="cover-left">
+    <h1>El impacto de la <span class="gold">IA</span> en el diseño y desarrollo de videojuegos</h1>
+    <p class="muted" style="margin-top:.5rem;font-size:clamp(1.8rem,3.4vw,2.8rem);line-height:1.2">Un caso de estudio a través de <span class="gold">Ptolemy's Night</span></p>
+    <p style="margin-top:1.6rem">Julia Fernández Bermejo</p>
+    <p class="small muted">Grado en Diseño y Desarrollo de Videojuegos · Supervisor: Pedro José Sanz Valero</p>
+    <div class="uji-chip"><img src="assets/uji_logo.png" alt="Universitat Jaume I"></div>
+  </div>
+  <img class="cover-logo" src="assets/logo.png" alt="Ptolemy's Night">
+</section>
+
+<!-- 1 · MOTIVACIÓN -->
+<section class="slide" data-section="Motivación"
+  data-notes="<h4>1 · Motivación, objetivos y estructura (≈1.5 min)</h4><p>Dos motivaciones/objetivos confluyen en <b>este estudio</b>: (1) aplicar lo aprendido en la carrera desarrollando un juego completo, y (2) responder de primera mano hasta qué punto la IA me ayuda a desarrollar videojuegos.</p><p>De ahí nace la estructura: el mismo trabajo se mira desde <b>cuatro escenarios</b> de contratación, según el rol de la IA — del desarrollador con la IA como herramienta (Esc.1) al emprendedor con diseñador y un equipo pequeño (Esc.4).</p>">
+  <h2 style="text-align:center">Motivación, objetivos y estructura</h2>
+  <div class="dstage">
+    <svg viewBox="0 0 1000 500" aria-hidden="true">
+      <defs>
+        <marker id="ah" markerWidth="14" markerHeight="12" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+          <path d="M0,0 L11,4 L0,8 Z" fill="#EEA727"/>
+        </marker>
+      </defs>
+      <g stroke="#EEA727" stroke-width="2.2" fill="none" stroke-linejoin="round">
+        <!-- PASO 2 · objetivos → estudio: ángulo recto, se dibujan -->
+        <path class="frag draw" data-frag="2" style="--len:230" d="M440,75 L490,75 L490,200" marker-end="url(#ah)"/>
+        <path class="frag draw" data-frag="2" style="--len:230" d="M560,75 L510,75 L510,200" marker-end="url(#ah)"/>
+        <!-- PASO 3 · estudio → escenarios: una línea que se dibuja -->
+        <path class="frag draw" data-frag="3" style="--len:70"  d="M500,250 L500,312"/>
+        <path class="frag draw" data-frag="3" style="--len:760" d="M130,312 L870,312"/>
+        <path class="frag draw" data-frag="3" style="--len:50"  d="M130,312 L130,350"/>
+        <path class="frag draw" data-frag="3" style="--len:50"  d="M377,312 L377,350"/>
+        <path class="frag draw" data-frag="3" style="--len:50"  d="M623,312 L623,350"/>
+        <path class="frag draw" data-frag="3" style="--len:50"  d="M870,312 L870,350"/>
+      </g>
+    </svg>
+    <!-- PASO 0 (inicial): cuadro izquierdo + su imagen -->
+    <img class="dnode dimg left" src="assets/ptolemy.png" alt="" style="left:19%;top:15%">
+    <div class="dnode dbox dobj" style="left:31%;top:15%"><span>Aplicar lo aprendido en la carrera</span></div>
+    <!-- PASO 1: cuadro derecho + su imagen -->
+    <div class="dnode dbox dobj frag" data-frag="1" style="left:69%;top:15%"><span>¿Hasta qué punto puede ayudarme la IA a desarrollar videojuegos?</span></div>
+    <img class="dnode dimg right frag" data-frag="1" src="assets/tequila.png" alt="" style="left:81%;top:15%">
+    <!-- PASO 2: el cuadro de estudio (tras dibujarse las flechas) -->
+    <div class="dnode dstudy frag" data-frag="2" style="left:50%;top:45%">ESTE ESTUDIO</div>
+    <!-- PASO 3: los cuatro escenarios (tras dibujarse la línea) -->
+    <div class="dnode dbox dsc frag" data-frag="3" style="left:13%;top:70%"><b>Escenario 1</b><span class="vspec"><span>Un desarrollador</span><span class="note">IA como herramienta</span></span></div>
+    <div class="dnode dbox dsc frag" data-frag="3" style="left:37.7%;top:70%"><b>Escenario 2</b><span class="vspec"><span>Emprendedor</span><span class="plus">+</span><span>IA</span></span></div>
+    <div class="dnode dbox dsc frag" data-frag="3" style="left:62.3%;top:70%"><b>Escenario 3</b><span class="vspec"><span>Emprendedor</span><span class="plus">+</span><span>Diseñador</span><span class="plus">+</span><span>IA</span></span></div>
+    <div class="dnode dbox dsc frag" data-frag="3" style="left:87%;top:70%"><b>Escenario 4</b><span class="vspec"><span>Emprendedor</span><span class="plus">+</span><span>Diseñador</span><span class="plus">+</span><span>Equipo pequeño</span><span class="plus">+</span><span>IA</span></span></div>
+  </div>
+</section>
+
+<!-- 2 · GANTT -->
+<section class="slide center" data-section="Planificación"
+  data-notes="<h4>2 · Gantt (≈45 s)</h4><p>Seis líneas EN PARALELO: planificación, análisis, desarrollo del juego (Esc.1), escenarios IA (2-4), resultados/conclusiones, documentación.</p><p>Clave: el juego TENÍA que estar terminado antes de evaluar los demás escenarios.</p>">
+  <h2>Planificación</h2>
+  <div class="frame" style="max-width:min(1100px,88vw)"><img src="assets/gantt.png" alt="Diagrama de Gantt" style="max-height:68vh;object-fit:contain"></div>
+</section>
+
+<!-- 5 · PTOLEMY'S NIGHT — EL JUEGO (Escenario 1, captura canónica) -->
+<section class="slide split wide" data-section="Escenario 1 · El juego"
+  data-notes="<h4>5 · Ptolemy's Night — el juego (Escenario 1)</h4><p>Puzle de 1 jugador. Eres el ESPÍRITU DE CASIOPEA y configuras la habitación de Claudio Ptolomeo (s.II) para que él, de noche, descubra y catalogue tu constelación.</p><p>3 fases (GameManager): Placement / Simulation / End. Esta es la build canónica = referencia de calidad del estudio (3 meses, humano + IA de apoyo).</p>">
+  <div class="txt">
+    <div class="kicker">Escenario 1 · la referencia canónica</div>
+    <h2>Ptolemy's Night</h2>
+    <p class="muted">Eres el <span class="gold">espíritu de Casiopea</span>: configuras la habitación para que Ptolomeo catalogue tu constelación.</p>
+    <div class="cap" style="margin-top:1.3rem">
+      <span class="badge b-mid">Placement</span><span class="badge b-mid">Simulation</span><span class="badge b-mid">End</span>
+    </div>
+  </div>
+  <div class="pic"><img src="assets/game_canonical.png" alt="Ptolemy's Night - build canónica"></div>
+</section>
+
+<!-- 5b2 · ARQUITECTURA (BUS) -->
+<section class="slide center" data-section="Escenario 1 · El juego"
+  data-notes="<h4>5b2 · Por dentro</h4><p>Los subsistemas no se hablan directamente: todo viaja por un único bus estático, <b>GameEvents</b>. El <b>GameManager</b> marca las fases y las anuncia; el árbol de decisión, los interactables y la UI se suscriben localmente.</p><p>Esto es lo que mantiene el código <b>desacoplado</b>: cada parte evoluciona sin romper las demás.</p>">
+  <h2>Por dentro</h2>
+  <div class="arch">
+    <div class="acard top"><b>GameManager</b><small>marca las fases del juego</small></div>
+    <div class="stem">
+      <span class="ball">Colocación</span><span class="ball">Simulación</span><span class="ball">Fin</span>
+    </div>
+    <div class="bus">GameEvents · el bus de eventos<span class="capsule"></span></div>
+    <div class="arow">
+      <div class="acard"><b>Árbol de decisión</b><small>el cerebro de Ptolomeo</small>
+        <span class="ball">empieza</span><span class="ball">tu turno</span><span class="ball">a pensar</span></div>
+      <div class="acard"><b>Interactables</b><small>los objetos de la sala</small>
+        <span class="ball up">vela encendida</span><span class="ball up">cortina abierta</span><span class="ball up">libro movido</span></div>
+      <div class="acard"><b>UI</b><small>lo que ve el jugador</small>
+        <span class="ball">diálogo</span><span class="ball">victoria</span><span class="ball">derrota</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5c · ALL-ROUNDER -->
+<section class="slide top" data-section="Escenario 1 · El juego"
+  data-notes="<h4>5c · All-rounder</h4><ul><li>Narrativa/research: Almagesto, mito de Casiopea, 18 diálogos, intro de 10 fragmentos, carta 'C.' que es la pista.</li><li>Arte: paleta fija como restricción dura; mechanics-first; personaje sombrero Blender + cuerpo Meshy + Mixamo; iluminación cohesiona.</li><li>Playtesting: 24 testers → build final (parar/acelerar, saltar narrativa, pistas, sonido).</li></ul>">
+  <div class="kicker">Un resultado "all-rounder"</div>
+  <div class="three allr-text">
+    <div class="card"><h3>Narrativa &amp; research</h3><p style="font-size:1.15em">Almagesto, mito de Casiopea, 18 diálogos, carta-pista</p></div>
+    <div class="card"><h3>Arte &amp; dirección</h3><p style="font-size:1.15em">Paleta como restricción dura, <em>mechanics-first</em>, morado la noche &amp; amarillo las estrellas y la luz</p></div>
+    <div class="card"><h3>Playtesting</h3><p style="font-size:1.15em"><span class="gold">24 playtesters</span> para un resultado pulido.</p></div>
+  </div>
+  <div class="three allr-imgs">
+    <div class="imgs">
+      <img class="tall" src="assets/ptolemy2.jpg" alt="Ptolomeo">
+      <img class="tall" src="assets/cassiopea.jpg" alt="Casiopea">
+    </div>
+    <div class="imgs">
+      <span class="pair"><img class="mini" src="assets/palette.png" alt="Paleta"><img class="mini" src="assets/logo.png" alt="Logo"></span>
+      <img class="shot" src="assets/art1.png" alt="">
+      <img class="shot" src="assets/art2.png" alt="">
+    </div>
+    <div class="imgs"><img class="fig" src="assets/playtesting.png" alt="Feedback de playtesting"></div>
+  </div>
+</section>
+
+<!-- 6a · ESCENARIO 2 (captura magenta) -->
+<section class="slide split flip" data-section="Escenario 2"
+  data-notes="<h4>6a · Escenario 2 (la IA sola)</h4><p>Brief pobre, sin revisión. &lt;1h. Pasó TODAS sus pruebas… pero injugable: magenta, objetos enterrados, eventos sin señal, cámara fija. Se colaron porque nunca se le pidió comprobarlos.</p>">
+  <div class="txt">
+    <div class="kicker">Escenario 2 · la IA sola, brief escaso</div>
+    <h2>Pasó sus pruebas… pero es injugable</h2>
+    <div class="cap"><span class="badge b-bad">Injugable</span></div>
+  </div>
+  <div class="pic"><video autoplay muted loop playsinline controls poster="assets/s2.png"><source src="assets/s2.mp4" type="video/mp4"></video></div>
+</section>
+
+<!-- 6b · ESCENARIO 3 (captura habitación oscura) -->
+<section class="slide split" data-section="Escenario 3"
+  data-notes="<h4>6b · Escenario 3 (GDD + checkpoints)</h4><p>GDD completo + checkpoints. &lt;1h. Sin fallos estructurales, pero el juego no se 'juega'; 5 problemas estéticos. Buen punto de partida, no entregable. Falta technical artist + playtester.</p>">
+  <div class="txt">
+    <div class="kicker">Escenario 3 · GDD completo + checkpoints</div>
+    <h2>Interactivo, pero aún no es un juego</h2>
+    <div class="cap"><span class="badge b-mid">Buen punto de partida</span></div>
+  </div>
+  <div class="pic"><video autoplay muted loop playsinline controls poster="assets/s3.png"><source src="assets/s3.mp4" type="video/mp4"></video></div>
+</section>
+
+<!-- 6c · ESCENARIO 4 (captura pulida) -->
+<section class="slide" data-section="Escenario 4"
+  data-notes="<h4>6c · Escenario 4 · tres tareas a la IA</h4><p>Al contrario que los anteriores, la IA recibió el <b>juego completo</b> (el del Escenario 1). Le pedí tres tareas, cada una más ambigua y ambiciosa:</p><ul><li><b>Tarea 1 (concreta y acotada):</b> añadir un botón para pausar la simulación. Lo hizo a la primera, sola, reciclando assets y fuentes; quizá el posicionamiento no era el ideal.</li><li><b>Tarea 2 (más margen de decisión):</b> implementar un sistema de pistas. Tuvo que plantear el problema y la solución → feedback al final de cada simulación según el camino erróneo, y más explícito si repites el mismo error.</li><li><b>Tarea 3 (experimental, libre):</b> 5 horas para mejorar el juego asumiendo el rol de diseñadora. Muchas de sus mejoras coincidieron con el feedback real del playtesting (p. ej. botón de pausa y de acelerar).</li></ul>">
+  <div class="kicker">Escenario 4 · partió del juego ya terminado</div>
+  <h2>Tres tareas, cada una más ambiciosa</h2>
+  <div class="three taskrow">
+    <div class="taskcard">
+      <p class="taskt"><span class="tasknum">1</span> Añadir un botón para pausar la simulación</p>
+      <div class="frame"><img src="assets/s4_task1.png" alt="Tarea 1 — botón de pausa"></div>
+    </div>
+    <div class="taskcard">
+      <p class="taskt"><span class="tasknum">2</span> Implementar un sistema de pistas</p>
+      <div class="frame"><img class="cropx" src="assets/s4_task2.png" alt="Tarea 2 — sistema de pistas"></div>
+    </div>
+    <div class="taskcard">
+      <p class="taskt"><span class="tasknum">3</span> 5 h para mejorar el juego, como diseñadora</p>
+      <div class="frame"><img src="assets/s4.png" alt="Tarea 3 — mejoras libres"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · RESULTADOS (TABLA) -->
+<section class="slide" data-section="Resultados y conclusiones"
+  data-notes="<h4>7 · Resultados y conclusiones</h4><p>Recorrer la tabla. Dos conclusiones: (1) la IA es más útil con más info previa, objetivo y restricciones claras (S2 vs S3); (2) el humano sigue imprescindible (criterio, gusto, arte, aceptación del jugador); el equipo mínimo es más pequeño pero no cero.</p>">
+  <h2>Resultados y conclusiones</h2>
+  <table class="resultsT">
+    <thead><tr><th></th><th>Esc. 1</th><th>Esc. 2</th><th>Esc. 3</th><th>Esc. 4</th></tr></thead>
+    <tbody>
+      <tr><td>Tiempo</td><td>3 meses</td><td>&lt;1 h</td><td>&lt;1 h</td><td>3 meses + 5h</td></tr>
+      <tr><td>¿Jugable?</td><td><span class="badge b-good">Sí</span></td><td><span class="badge b-bad">No</span></td><td><span class="badge b-mid">No del todo</span></td><td><span class="badge b-good">Sí</span></td></tr>
+      <tr><td>Problemas estéticos</td><td>0</td><td>Injugable</td><td>5</td><td>Mejora más</td></tr>
+      <tr><td>Veredicto</td><td>Referencia</td><td>Sin diseñador, no se entrega</td><td>Buen inicio</td><td>Absorbe tareas de dev</td></tr>
+    </tbody>
+  </table>
+  <div class="two" style="margin-top:1.3rem">
+    <div class="card"><h3>1 · Brief claro</h3><p>Más info previa, objetivo y restricciones ⇒ IA más útil. <span class="muted">(S2 vs S3.)</span></p></div>
+    <div class="card"><h3>2 · El humano</h3><p>Criterio, gusto, arte y la aceptación del jugador. Equipo mínimo <b>no cero</b>.</p></div>
+  </div>
+</section>
+
+<!-- 8 · EQUIPO + COSTE -->
+<section class="slide" data-section="Resultados"
+  data-notes="<h4>8 · Equipo y coste/tiempo</h4><p>Estudio pequeño, pero mucho más pequeño. IA absorbe junior+medio; trabaja al lado de technical artist, playtester y senior. 8→5 personas, coste personal a la mitad, tiempo 15→7 meses. Cifras ilustrativas.</p>">
+  <h2>Estructura mínima de equipo</h2>
+  <div class="cols">
+    <div>
+      <p class="muted">Sí hace falta estudio — pero <span class="gold">mucho más pequeño</span>.</p>
+      <ul style="margin-top:.5em">
+        <li><span class="pale">Humano:</span> Owner / Game Designer</li>
+        <li><span class="pale">Junto a la IA:</span> Technical Artist · Playtester · Senior Dev</li>
+        <li><span class="gold">La IA absorbe:</span> dev junior y medio</li>
+      </ul>
+    </div>
+    <div>
+      <div class="metric">
+        <div class="cap">Coste de personal / año</div>
+        <div class="bar-row"><div class="small">Sin IA</div><div class="bar-track"><div class="bar-fill alt" data-w="100"></div></div><div class="bar-val">400k</div></div>
+        <div class="bar-row"><div class="small">Con IA</div><div class="bar-track"><div class="bar-fill" data-w="50"></div></div><div class="bar-val">200k</div></div>
+      </div>
+      <div class="metric">
+        <div class="cap">Tiempo hasta lanzar</div>
+        <div class="bar-row"><div class="small">Sin IA</div><div class="bar-track"><div class="bar-fill alt" data-w="100"></div></div><div class="bar-val">15 m</div></div>
+        <div class="bar-row"><div class="small">Con IA</div><div class="bar-track"><div class="bar-fill" data-w="47"></div></div><div class="bar-val">7 m</div></div>
+      </div>
+      <p class="small muted">Cifras ilustrativas (escala de Ptolemy's Night).</p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · DEMO -->
+<section class="slide center" data-section="Demostración"
+  data-notes="<h4>10 · DEMO (5 min, fuera de los 10)</h4><p>~2 min jugar en vivo (3 fases, intentar buen final; navegador ya abierto). ~3 min vídeos S2/S3/S4. Plan B: build WebGL local o grabación.</p>">
+  <div class="eyebrow">Demostración</div>
+  <h2>Ptolemy's Night — en vivo</h2>
+  <a href="https://julia-fdez.itch.io/ptolemys-night" target="_blank" rel="noopener" style="text-decoration:none">
+    <div class="frame" style="width:min(620px,68vw);cursor:pointer"><img src="assets/banner.png" alt="Ptolemy's Night"></div>
+    <div style="margin-top:1.1em;display:inline-block;background:linear-gradient(90deg,var(--purple2),var(--gold));color:#1a1030;font-weight:800;padding:.7em 1.6em;border-radius:999px;font-size:1.2rem;box-shadow:0 8px 30px #0008">▶ &nbsp;Jugar en itch.io</div>
+  </a>
+  <!-- Para incrustar el juego DENTRO de la diapositiva, sustituye el bloque <a>…</a> por:
+       <div class="game-wrap"><iframe src="https://itch.io/embed-upload/TU_ID?color=2a1a4a" allowfullscreen></iframe></div>
+       El ID lo da itch.io en: panel del juego → Edit game → Embed options. -->
+</section>
+
+<!-- 11 · GRACIAS -->
+<section class="slide center" data-section="Gracias"
+  data-notes="<h4>11 · Cierre</h4><p>Gracias. Vídeos de los escenarios + preguntas del tribunal.</p>">
+  <img class="logo" src="assets/title.png" alt="" style="width:min(300px,36vw)">
+  <h1 class="gold">Gracias</h1>
+  <p class="muted" style="margin-top:.6em">Julia Fernández Bermejo · TFG · Universitat Jaume I</p>
+  <img src="assets/uji.png" alt="UJI" style="width:120px;margin-top:1.4rem;opacity:.85">
+</section>
+
+</div>
+
+<div id="progress"></div>
+<div class="section-tag" id="sectionTag"></div>
+<div id="help"><kbd>←</kbd><kbd>→</kbd> navegar · <kbd>S</kbd> notas · <kbd>T</kbd> timer · <kbd>F</kbd> pantalla completa</div>
+<div id="footer"><div>Ptolemy's Night — Defensa TFG</div><div class="right"><span id="timer">10:00</span><span id="counter">1 / 1</span></div></div>
+<div id="notes"></div>
+
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0,fragIdx=0;
+const counter=document.getElementById('counter'),progress=document.getElementById('progress'),
+      sectionTag=document.getElementById('sectionTag'),notes=document.getElementById('notes');
+// Cada .frag ocupa un "paso". Si lleva data-frag="N" se agrupa en ese paso (varios a la vez);
+// si no, su paso es su orden en el DOM (comportamiento clásico de uno en uno).
+function fragStep(el,i){return el.dataset.frag?+el.dataset.frag:i+1;}
+function fragMax(i){const fr=[...slides[i].querySelectorAll('.frag')];return fr.length?Math.max(...fr.map(fragStep)):0;}
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+  [...slides[cur].querySelectorAll('.frag')].forEach((el,i)=>el.classList.toggle('show',fragStep(el,i)<=fragIdx));
+  counter.textContent=`${cur+1} / ${slides.length}`;
+  progress.style.width=(cur/(slides.length-1)*100)+'%';
+  sectionTag.textContent=slides[cur].dataset.section||'';
+  if(notes.classList.contains('show'))renderNotes();
+  slides[cur].querySelectorAll('.bar-fill').forEach(b=>{b.style.width='0';requestAnimationFrame(()=>requestAnimationFrame(()=>b.style.width=b.dataset.w+'%'));});
+}
+function renderNotes(){notes.innerHTML=slides[cur].dataset.notes||'<p class="muted">(sin notas)</p>';}
+function next(){if(fragIdx<fragMax(cur)){fragIdx++;render();return;}if(cur<slides.length-1){cur++;fragIdx=0;render();}}
+function prev(){if(fragIdx>0){fragIdx--;render();return;}if(cur>0){cur--;fragIdx=fragMax(cur);render();}}
+function goto(i){cur=Math.max(0,Math.min(slides.length-1,i));fragIdx=0;render();}
+document.addEventListener('keydown',e=>{switch(e.key){
+  case 'ArrowRight':case ' ':case 'PageDown':e.preventDefault();next();break;
+  case 'ArrowLeft':case 'PageUp':e.preventDefault();prev();break;
+  case 'Home':goto(0);break;case 'End':goto(slides.length-1);break;
+  case 's':case 'S':notes.classList.toggle('show');renderNotes();break;
+  case 't':case 'T':toggleTimer();break;case 'r':case 'R':resetTimer();break;
+  case 'f':case 'F':document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();break;
+}});
+document.getElementById('deck').addEventListener('click',e=>{if(e.target.closest('iframe,a,button,video'))return;if(e.clientX<window.innerWidth*0.18)prev();else next();});
+const timerEl=document.getElementById('timer');let total=600,left=total,running=false,tID=null;
+function fmt(s){const m=Math.floor(Math.abs(s)/60),x=Math.abs(s)%60;return (s<0?'-':'')+m+':'+String(x).padStart(2,'0');}
+function tick(){left--;timerEl.textContent=fmt(left);timerEl.classList.toggle('over',left<0);}
+function toggleTimer(){running=!running;running?tID=setInterval(tick,1000):clearInterval(tID);}
+function resetTimer(){clearInterval(tID);running=false;left=total;timerEl.textContent=fmt(left);timerEl.classList.remove('over');}
+render();
+</script>
+</body>
+</html>
