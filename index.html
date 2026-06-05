@@ -295,6 +295,24 @@ tbody tr:hover{background:#ffffff0a}
 #help{position:fixed;top:14px;right:18px;z-index:40;font-size:.72rem;color:#ffffff66}
 kbd{background:#ffffff18;border:1px solid #ffffff33;border-bottom-width:2px;border-radius:5px;padding:.05em .4em;font-size:.9em}
 code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
+
+/* === Modo impresión / PDF: una diapositiva por página, todo revelado === */
+@media print{
+  @page{size:1280px 720px;margin:0}
+  html{font-size:90%}
+  html,body{width:auto;height:auto;overflow:visible;background:var(--night2)}
+  .cover2{align-items:center}
+  .cover-logo{width:min(38vw,440px)}
+  #deck{position:static}
+  *{transition:none!important;animation:none!important}
+  .slide{display:flex!important;position:relative!important;inset:auto!important;
+    width:1280px;height:720px;page-break-after:always;break-after:page;overflow:hidden}
+  .slide:last-of-type{page-break-after:auto;break-after:auto}
+  .dstage path.draw{opacity:1!important;stroke-dashoffset:0!important}
+  .arch .capsule,.arch .ball{display:none!important}   /* solo se ven en movimiento */
+  #footer,#help,#progress,#notes,.section-tag{display:none!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
@@ -577,6 +595,13 @@ function tick(){left--;timerEl.textContent=fmt(left);timerEl.classList.toggle('o
 function toggleTimer(){running=!running;running?tID=setInterval(tick,1000):clearInterval(tID);}
 function resetTimer(){clearInterval(tID);running=false;left=total;timerEl.textContent=fmt(left);timerEl.classList.remove('over');}
 render();
+// Modo impresión/PDF (?print): mostrar todas las diapositivas y revelar todos los pasos
+if(location.search.indexOf('print')>=0){
+  slides.forEach(s=>s.classList.add('active'));
+  document.querySelectorAll('.frag').forEach(f=>f.classList.add('show'));
+  document.querySelectorAll('.bar-fill').forEach(b=>b.style.width=(b.dataset.w||0)+'%');
+  document.querySelectorAll('.dstage path.draw').forEach(p=>p.style.strokeDashoffset='0');
+}
 </script>
 </body>
 </html>
