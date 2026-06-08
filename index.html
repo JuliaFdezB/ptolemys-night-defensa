@@ -555,7 +555,7 @@ code{font-family:Consolas,monospace;color:var(--pale);font-size:.92em}
 <div id="progress"></div>
 <div class="section-tag" id="sectionTag"></div>
 <div id="help"><kbd>←</kbd><kbd>→</kbd> navegar · <kbd>S</kbd> notas · <kbd>T</kbd> timer · <kbd>F</kbd> pantalla completa</div>
-<div id="footer"><div>Ptolemy's Night — Defensa TFG</div><div class="right"><span id="timer">10:00</span><span id="counter">1 / 1</span></div></div>
+<div id="footer"><div>Ptolemy's Night — Defensa TFG</div><div class="right"><span id="timer">20:00</span><span id="counter">1 / 1</span></div></div>
 <div id="notes"></div>
 
 <script>
@@ -589,7 +589,7 @@ document.addEventListener('keydown',e=>{switch(e.key){
   case 'f':case 'F':document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();break;
 }});
 document.getElementById('deck').addEventListener('click',e=>{if(e.target.closest('iframe,a,button,video'))return;if(e.clientX<window.innerWidth*0.18)prev();else next();});
-const timerEl=document.getElementById('timer');let total=600,left=total,running=false,tID=null;
+const timerEl=document.getElementById('timer');let total=1200,left=total,running=false,tID=null;
 function fmt(s){const m=Math.floor(Math.abs(s)/60),x=Math.abs(s)%60;return (s<0?'-':'')+m+':'+String(x).padStart(2,'0');}
 function tick(){left--;timerEl.textContent=fmt(left);timerEl.classList.toggle('over',left<0);}
 function toggleTimer(){running=!running;running?tID=setInterval(tick,1000):clearInterval(tID);}
